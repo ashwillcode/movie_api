@@ -1,8 +1,20 @@
 const express = require('express');
 const morgan = require('morgan'); 
 const app = express();
+const fs = require('fs');
+const Joi = require('joi');
 
 app.use(morgan('common'));
+
+app.use((req, res, next) => {
+    const log = `${new Date().toISOString()} - ${req.method} ${req.url}\n`;
+    fs.appendFile('log.txt', log, (err) => {
+        if (err) {
+            console.error('Logging error:', err);
+        }
+    });
+    next();
+});
 
 const movies = [
     {
@@ -88,25 +100,37 @@ const movies = [
 ];
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 let users = [];
 
-app.post('/users', (req, res) => {
-    const newUser = req.body;
+const userSchema = Joi.object({
+    username: Joi.string().min(3).max(30).required(),
+    email: Joi.string().email().required()
+});
 
-    if (!newUser.username || !newUser.email) {
-        return res.status(400).send('Missing username or email in request body.');
+app.post('/users', (req, res) => {
+    const { error } = userSchema.validate(req.body); 
+    if (error) {
+        return res.status(400).send(error.details[0].message); 
     }
 
-    const userExists = users.some((user) => user.email === newUser.email);
+    const { username, email } = req.body;
+    const userExists = users.some(user => user.email.toLowerCase() === email.toLowerCase());
     if (userExists) {
         return res.status(400).send('User already exists with this email.');
     }
 
-    newUser.id = users.length + 1;
+    const newUser = {
+        id: users.length + 1,
+        username,
+        email,
+        favorites: []
+    };
     users.push(newUser);
-    res.status(201).json(newUser); 
+    res.status(201).json(newUser);
 });
+
 
 app.get('/users', (req, res) => {
     res.json(users);
@@ -122,18 +146,22 @@ app.get('/users/:username', (req, res) => {
 });
 
 app.put('/users/:username', (req, res) => {
-    const currentUsername = req.params.username.toLowerCase(); 
-    const updatedUsername = req.body.username;
-
-    const user = users.find((u) => u.username.toLowerCase() === currentUsername);
+    const user = users.find(u => u.username.toLowerCase() === req.params.username.toLowerCase());
     if (!user) {
         return res.status(404).send('User not found.');
     }
 
-    user.username = updatedUsername;
+    const { error } = userSchema.validate(req.body); 
+    if (error) {
+        return res.status(400).send(error.details[0].message); 
+    }
 
-    res.status(200).json(user)
+    user.username = req.body.username; 
+    user.email = req.body.email;
+
+    res.status(200).json(user);
 });
+
 
 app.delete('/users/:username', (req, res) => {
     const userIndex = users.findIndex((u) => u.username.toLowerCase() === req.params.username.toLowerCase());
@@ -204,13 +232,16 @@ app.get('/', (req, res) => {
 });
 
 app.get('/movies/:title', (req, res) => {
-    const movie = movies.find((m) => m.title.toLowerCase() === req.params.title.toLowerCase());
+    const movieTitle = decodeURIComponent(req.params.title).toLowerCase();
+    const movie = movies.find(m => m.title.toLowerCase() === movieTitle);
+
     if (movie) {
         res.json(movie);
     } else {
         res.status(404).send('Movie not found.');
     }
 });
+
 
 app.get('/genres/:name', (req, res) => {
     const genreMovies = movies.filter((m) => m.genre.toLowerCase() === req.params.name.toLowerCase());

@@ -7,3 +7,16 @@ Timestamp: 2024-12-23T21:02:48.944Z
 URL: /unknown
 Timestamp: 2024-12-23T21:03:01.017Z
 
+2025-01-14T05:27:07.420Z - POST /users
+2025-01-14T05:27:27.993Z - POST /users
+2025-01-14T05:27:40.165Z - POST /users
+2025-01-14T05:27:48.394Z - POST /users
+2025-01-14T05:28:02.011Z - PUT /users/JohnDoe
+2025-01-14T05:28:17.290Z - PUT /users/JohnDoe
+2025-01-14T05:31:27.041Z - PUT /users/JohnDoe
+2025-01-14T05:33:18.336Z - POST /users
+2025-01-14T05:33:27.006Z - PUT /users/JohnDoe
+2025-01-14T05:33:38.519Z - PUT /users/JohnDoe
+2025-01-14T05:36:14.246Z - GET /movies/Spider-Man%3A%20Homecoming
+2025-01-14T05:36:55.846Z - GET /movies/Spider-Man%3A%20Homecoming
+2025-01-14T05:37:43.519Z - GET /movies/The%20Lord%20of%20the%20Rings%3A%20The%20Return%20of%20the%20King
