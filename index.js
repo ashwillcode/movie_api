@@ -134,20 +134,20 @@ app.post('/users', validateRequest(userSchema), async (req, res) => {
         
         // Create new user with hashed password
         const user = await Users.create({
-            Username: req.body.Username,
-            Password: hashedPassword,
-            Email: req.body.Email,
-            Birthday: req.body.Birthday
+            username: req.body.urlsername,
+            password: hashedPassword,
+            email: req.body.email,
+            birthday: req.body.birthday
         });
 
         // Return success response
         res.status(201).json({
             message: 'User created successfully',
             user: {
-                Username: user.Username,
-                Email: user.Email,
-                Birthday: user.Birthday,
-                FavoriteMovies: user.FavoriteMovies
+                username: user.username,
+                email: user.email,
+                birthday: user.birthday,
+                favoriteMovies: user.favoriteMovies
             }
         });
     } catch (error) {
