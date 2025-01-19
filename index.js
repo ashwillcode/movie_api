@@ -54,7 +54,7 @@ const validateRequest = (schema) => {
 app.use('/', auth);
 
 // Connect to MongoDB database
-mongoose.connect(process.env.CONNECTION_URI || 'mongodb://localhost:27017/movies_api_mongo', { 
+mongoose.connect(process.env.CONNECTION_URI || 'mongodb://localhost:27017/filmapi', { 
     
 })
 .then(() => console.log('Connected to MongoDB Atlas!'))
