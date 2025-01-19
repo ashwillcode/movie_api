@@ -4,6 +4,28 @@ const app = express();
 const fs = require('fs');
 const Joi = require('joi');
 
+// Import Mongoose and models
+const mongoose = require('mongoose');
+const Models = require('./models.js');
+
+// Assign models to variables
+const Movies = Models.Movie;
+const Users = Models.User;
+
+// Connect to MongoDB database
+mongoose.connect('mongodb://localhost:27017/movies_api_mongo', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
+
+// Verify MongoDB connection
+const db = mongoose.connection;
+db.on('error', (error) => console.error('Connection error:', error));
+db.once('open', () => {
+    console.log('Connected to MongoDB!');
+});
+
+
 app.use(morgan('common'));
 
 app.use((req, res, next) => {
