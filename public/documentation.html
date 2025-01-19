@@ -1,209 +1,128 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="robots" content="index, follow">
-    <meta name="author" content="Ashley Williams">
     <title>Movie API Documentation</title>
-  </head>
-  <body>
+</head>
+<body>
     <h1>Movie API Documentation</h1>
-    <p>This API allows users to search for and save information about movies. It includes endpoints for retrieving movie data, managing user accounts, and more.</p>
+    <p>A RESTful API for managing movie information and user preferences.</p>
+
+    <h2>Authentication</h2>
+    <p>All endpoints except user registration and login require JWT authentication. Include the JWT token in the Authorization header:</p>
+    <pre>Authorization: Bearer your-jwt-token</pre>
 
     <h2>Endpoints</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Request</th>
-          <th>URL</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>GET</td>
-          <td>/movies</td>
-          <td>Returns a list of all movies.</td>
-        </tr>
-        <tr>
-          <td>GET</td>
-          <td>/movies/:title</td>
-          <td>Returns data about a single movie by title.</td>
-        </tr>
-        <tr>
-          <td>GET</td>
-          <td>/genres/:name</td>
-          <td>Returns data about a genre by name.</td>
-        </tr>
-        <tr>
-          <td>GET</td>
-          <td>/directors/:name</td>
-          <td>Returns data about a director by name.</td>
-        </tr>
-        <tr>
-          <td>POST</td>
-          <td>/users</td>
-          <td>Registers a new user.</td>
-        </tr>
-        <tr>
-          <td>PUT</td>
-          <td>/users/:username</td>
-          <td>Updates user information.</td>
-        </tr>
-        <tr>
-          <td>POST</td>
-          <td>/users/:username/movies/:movieId</td>
-          <td>Adds a movie to a user's list of favorites.</td>
-        </tr>
-        <tr>
-          <td>DELETE</td>
-          <td>/users/:username/movies/:movieId</td>
-          <td>Removes a movie from a user's list of favorites.</td>
-        </tr>
-        <tr>
-          <td>DELETE</td>
-          <td>/users/:username</td>
-          <td>Deletes a user account.</td>
-        </tr>
-      </tbody>
-    </table>
 
-    <h3>GET /movies</h3>
-    <p><strong>Description:</strong> Returns a list of all movies.</p>
-    <p><strong>Query Parameters:</strong> None</p>
-    <p><strong>Body:</strong> Not applicable</p>
-    <p><strong>Response:</strong></p>
+    <h3>User Authentication</h3>
+    <h4>POST /login</h4>
+    <p><strong>Description:</strong> Authenticate user and get JWT token</p>
+    <p><strong>Body:</strong></p>
     <pre>
-      [
-        {
-          "title": "Inception",
-          "director": "Christopher Nolan",
-          "description": "A skilled thief, the absolute best in the dangerous art of extraction, stealing valuable secrets from deep within the subconscious during the dream state.",
-          "genre": "Science Fiction",
-          "featured": true,
-          "imageURL": "https://m.media-amazon.com/images/I/51fKZ2s8XBL._AC_.jpg"
-        },
-        ...
-      ]
-    </pre>
-
-    <h3>GET /movies/:title</h3>
-    <p><strong>Description:</strong> Returns data about a single movie by title.</p>
-    <p><strong>Query Parameters:</strong> <code>:title</code> (string) - Title of the movie (case-insensitive).</p>
-    <p><strong>Body:</strong> Not applicable</p>
-    <p><strong>Response:</strong></p>
-    <pre>
-      {
-        "title": "Inception",
-        "director": "Christopher Nolan",
-        "description": "A skilled thief, the absolute best in the dangerous art of extraction, stealing valuable secrets from deep within the subconscious during the dream state.",
-        "genre": "Science Fiction",
-        "featured": true,
-        "imageURL": "https://m.media-amazon.com/images/I/51fKZ2s8XBL._AC_.jpg"
-      }
-    </pre>
-
-    <h3>GET /genres/:name</h3>
-    <p><strong>Description:</strong> Returns all movies belonging to a specific genre.</p>
-    <p><strong>Query Parameters:</strong> <code>:name</code> (string) - Name of the genre (case-insensitive).</p>
-    <p><strong>Body:</strong> Not applicable</p>
-    <p><strong>Response:</strong></p>
-    <pre>
-      [
-        {
-          "title": "Inception",
-          "genre": "Science Fiction",
-          ...
-        }
-      ]
-    </pre>
-
-    <h3>GET /directors/:name</h3>
-    <p><strong>Description:</strong> Returns all movies directed by a specific director.</p>
-    <p><strong>Query Parameters:</strong> <code>:name</code> (string) - Name of the director (case-insensitive).</p>
-    <p><strong>Body:</strong> Not applicable</p>
-    <p><strong>Response:</strong></p>
-    <pre>
-      {
-        "director": "Christopher Nolan",
-        "movies": ["Inception", "The Dark Knight", "Interstellar"]
-      }
-    </pre>
-
-    <h3>POST /users</h3>
-    <p><strong>Description:</strong> Registers a new user.</p>
-    <p><strong>Query Parameters:</strong> None</p>
-    <p><strong>Body:</strong> JSON object:</p>
-    <pre>
-      {
-        "username": "JohnDoe",
-        "email": "john@example.com"
-      }
+{
+    "Username": "yourUsername",
+    "Password": "yourPassword"
+}
     </pre>
     <p><strong>Response:</strong></p>
     <pre>
-      {
-        "username": "JohnDoe",
-        "email": "john@example.com",
-        "id": 1
-      }
+{
+    "user": {
+        "_id": "user_id",
+        "Username": "username",
+        "Email": "email",
+        "FavoriteMovies": []
+    },
+    "token": "jwt_token"
+}
     </pre>
 
-    <h3>PUT /users/:username</h3>
-    <p><strong>Description:</strong> Updates the username of an existing user.</p>
-    <p><strong>Query Parameters:</strong> <code>:username</code> (string) - Current username of the user.</p>
-    <p><strong>Body:</strong> JSON object:</p>
+    <h4>POST /users</h4>
+    <p><strong>Description:</strong> Register new user</p>
+    <p><strong>Body:</strong></p>
     <pre>
-      {
-        "username": "NewUsername"
-      }
+{
+    "Username": "yourUsername",
+    "Password": "yourPassword123!",
+    "Email": "your@email.com",
+    "Birthday": "1990-01-01"
+}
     </pre>
-    <p><strong>Response:</strong></p>
+    <p><strong>Validation:</strong></p>
+    <ul>
+        <li>Username: 3-30 characters, alphanumeric</li>
+        <li>Password: Minimum 8 characters, must include letter, number, and special character</li>
+        <li>Email: Valid email format</li>
+        <li>Birthday: ISO date format (optional)</li>
+    </ul>
+
+    <h3>Movies</h3>
+    <h4>GET /movies</h4>
+    <p><strong>Description:</strong> Get all movies</p>
+    <p><strong>Authentication:</strong> Required</p>
+
+    <h4>GET /movies/:id</h4>
+    <p><strong>Description:</strong> Get movie by ID</p>
+    <p><strong>Authentication:</strong> Required</p>
+
+    <h4>GET /movies/genre/:genreName</h4>
+    <p><strong>Description:</strong> Get movies by genre</p>
+    <p><strong>Authentication:</strong> Required</p>
+
+    <h4>GET /movies/director/:directorName</h4>
+    <p><strong>Description:</strong> Get movies by director</p>
+    <p><strong>Authentication:</strong> Required</p>
+
+    <h3>User Operations</h3>
+    <h4>GET /users</h4>
+    <p><strong>Description:</strong> Get all users</p>
+    <p><strong>Authentication:</strong> Required</p>
+
+    <h4>GET /users/:username</h4>
+    <p><strong>Description:</strong> Get user by username</p>
+    <p><strong>Authentication:</strong> Required</p>
+
+    <h4>PUT /users/:username</h4>
+    <p><strong>Description:</strong> Update user information</p>
+    <p><strong>Authentication:</strong> Required</p>
+    <p><strong>Body:</strong></p>
     <pre>
-      {
-        "username": "NewUsername",
-        "email": "john@example.com",
-        "id": 1
-      }
+{
+    "Username": "newUsername",
+    "Password": "newPassword123!",
+    "Email": "new@email.com",
+    "Birthday": "1990-01-01"
+}
     </pre>
 
-    <h3>POST /users/:username/favorites</h3>
-    <p><strong>Description:</strong> Adds a movie to the user’s favorites list.</p>
-    <p><strong>Query Parameters:</strong> <code>:username</code> (string) - Username of the user.</p>
-    <p><strong>Body:</strong> JSON object:</p>
+    <h4>DELETE /users/:username</h4>
+    <p><strong>Description:</strong> Delete user account</p>
+    <p><strong>Authentication:</strong> Required</p>
+
+    <h4>POST /users/:username/favorites</h4>
+    <p><strong>Description:</strong> Add movie to favorites</p>
+    <p><strong>Authentication:</strong> Required</p>
+    <p><strong>Body:</strong></p>
     <pre>
-      {
-        "title": "Inception"
-      }
-    </pre>
-    <p><strong>Response:</strong></p>
-    <pre>
-      "Movie "Inception" added to favorites."
+{
+    "movieId": "movie_id"
+}
     </pre>
 
-    <h3>DELETE /users/:username/favorites</h3>
-    <p><strong>Description:</strong> Removes a movie from the user’s favorites list.</p>
-    <p><strong>Query Parameters:</strong> <code>:username</code> (string) - Username of the user.</p>
-    <p><strong>Body:</strong> JSON object:</p>
-    <pre>
-      {
-        "title": "Inception"
-      }
-    </pre>
-    <p><strong>Response:</strong></p>
-    <pre>
-      "Movie "Inception" removed from favorites."
-    </pre>
+    <h4>DELETE /users/:username/favorites/:movieId</h4>
+    <p><strong>Description:</strong> Remove movie from favorites</p>
+    <p><strong>Authentication:</strong> Required</p>
 
-    <h3>DELETE /users/:username</h3>
-    <p><strong>Description:</strong> Deletes a user account.</p>
-    <p><strong>Query Parameters:</strong> <code>:username</code> (string) - Username of the user.</p>
-    <p><strong>Body:</strong> Not applicable</p>
-    <p><strong>Response:</strong></p>
-    <pre>
-      "User has been deregistered."
-    </pre>
+    <h2>Error Responses</h2>
+    <p>The API uses standard HTTP response codes:</p>
+    <ul>
+        <li>200: Success</li>
+        <li>201: Created</li>
+        <li>400: Bad Request</li>
+        <li>401: Unauthorized</li>
+        <li>404: Not Found</li>
+        <li>500: Internal Server Error</li>
+    </ul>
 </body>
 </html>
