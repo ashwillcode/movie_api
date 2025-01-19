@@ -2,33 +2,67 @@
 
 ## Description
 
-The **Movie API** is a RESTful service that allows users to:
-- Retrieve details about movies, genres, and directors.
-- Manage user accounts, including registration, updates, and deregistration.
-- Add or remove movies from a user's list of favorites.
-
-This API is designed for a movie database application and serves as a backend for interacting with movie data.
+The **Movie API** is a RESTful API built with Node.js and Express that provides access to a movie database. It allows users to register, authenticate, and manage their favorite movies list. The API uses JWT token-based authentication and includes data validation, password hashing, and proper error handling.
 
 ---
 
 ## Table of Contents
 
 1. [Features](#features)
-2. [Endpoints](#endpoints)
-3. [Installation](#installation)
-4. [Usage](#usage)
-5. [Technologies](#technologies)
-6. [License](#license)
+2. [Technical] (#technicalrequirements)
+3. [Dependencies] (#dependencies)
+4. [Endpoints](#endpoints)
+5. [Installation](#installation)
+6. [Usage](#usage)
+7. [Hosting] (#hosting)
+8. [Documentation] (#documentation)
+9. [Version] (#version)
+10. [Author] (#author)
+11. [License](#license)
 
 ---
 
 ## Features
 
 - **Movies**: Retrieve all movies, get details by title, and filter by genre or director.
-- **Users**: Register new users, update user information, and manage user accounts.
+- **Users**: Register new users, update user information, and manage user accounts, authentication and authorization using JWT tokens. 
+- **Password**: Password hashing for secure user data storage. 
 - **Favorites**: Add or remove movies from a user's list of favorites.
 - **Error Handling**: Provides meaningful error responses for invalid requests.
 - **Logging**: Tracks all incoming requests with timestamps and saves them to `log.txt`.
+- **Input Validation**: Input validation and sanitization. 
+- **Cors**: support for cross-origin requests. 
+
+---
+
+## Technical Requirements
+
+-Node.js
+-Express
+-MongoDB
+-Mongoose
+-Passport JWT
+-bcryptjs
+-CORS
+-Express Validator
+
+---
+
+## Dependencies
+
+{
+  "bcryptjs": "^2.4.3",
+  "body-parser": "^1.20.2",
+  "cors": "^2.8.5",
+  "express": "^4.18.2",
+  "express-validator": "^7.0.1",
+  "jsonwebtoken": "^9.0.0",
+  "mongoose": "^7.0.3",
+  "morgan": "^1.10.0",
+  "passport": "^0.6.0",
+  "passport-jwt": "^4.0.1",
+  "passport-local": "^1.0.0"
+}
 
 ---
 
@@ -62,8 +96,14 @@ This API is designed for a movie database application and serves as a backend fo
     cd movie_api
 3. Install dependancies:
     npm install 
-4. Start the server: 
+4. Create a .env file with config: 
+    CONNECTION_URI=your_mongodb_uri
+    JWT_SECRET=your_jwt_secret
+    PORT=8080
+5. Start the server: 
     node index.js 
+
+--- 
 
 ## Usage 
 
@@ -71,14 +111,34 @@ This API is designed for a movie database application and serves as a backend fo
 2. Run the server. 
 3. use an API testing tool to interact with endpoints. 
 
-## Technologies 
+---
 
-- Node.js: JavaScript runtime environment.
-- Express.js: Web framework for Node.js. 
-- Morgan: Logging middleware. 
-- File System(fs): Logging request data to log.txt. 
+## Hosting
+
+This API is hosted on Heroku with the database hosted on MongoDB Atlas
+
+---
+
+## Documentation
+
+Full API documentation is available in the public/documentation.html file. 
+
+---
+
+## Version
+
+1.0.0
+
+---
+
+## Author
+
+Ashley Williams
+
+---
 
 ## License
 
-
+ GNU AFFERO GENERAL PUBLIC LICENSE
+ Version 3, 19 November 2007
 
