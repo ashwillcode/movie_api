@@ -134,7 +134,7 @@ app.post('/users', validateRequest(userSchema), async (req, res) => {
         
         // Create new user with hashed password
         const user = await Users.create({
-            username: req.body.urlsername,
+            username: req.body.username,
             password: hashedPassword,
             email: req.body.email,
             birthday: req.body.birthday
