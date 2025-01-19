@@ -1,4 +1,5 @@
 let allowedOrigins = ['http://localhost:8080', 'http://localhost:1234', 'https://your-movie-app.herokuapp.com'];
+require('dotenv').config();
 
 const express = require('express');
 const morgan = require('morgan'); 
@@ -56,13 +57,9 @@ app.use('/', auth);
 mongoose.connect(process.env.CONNECTION_URI || 'mongodb://localhost:27017/movies_api_mongo', { 
     useNewUrlParser: true, 
     useUnifiedTopology: true 
-});
-
-const db = mongoose.connection;
-db.on('error', (error) => console.error('Connection error:', error));
-db.once('open', () => {
-    console.log('Connected to MongoDB!');
-});
+})
+.then(() => console.log('Connected to MongoDB Atlas!'))
+.catch(err => console.error('Error connecting to MongoDB Atlas:', err));
 
 // Model Setup
 const Movies = Models.Movie;
