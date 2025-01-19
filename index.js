@@ -130,111 +130,147 @@ const userSchema = Joi.object({
 
 // Routes
 // POST - Create user
-app.post('/users', (req, res) => {
+app.post('/users', async (req, res) => {
     const { error } = userSchema.validate(req.body); 
     if (error) {
         return res.status(400).send(error.details[0].message); 
     }
 
     const { username, email } = req.body;
-    const userExists = users.some(user => user.email.toLowerCase() === email.toLowerCase());
-    if (userExists) {
-        return res.status(400).send('User already exists with this email.');
-    }
+    try {
+        const userExists = await Users.findOne({ Email: email }); // Use MongoDB query to check if user exists
+        if (userExists) {
+            return res.status(400).send('User already exists with this email.');
+        }
 
-    const newUser = {
-        id: users.length + 1,
-        username,
-        email,
-        favorites: []
-    };
-    users.push(newUser);
-    res.status(201).json(newUser);
+        const newUser = new Users({
+            Username: username,
+            Email: email,
+            Password: req.body.Password, // Make sure password is hashed before storing
+            FavoriteMovies: []
+        });
+        
+        await newUser.save(); // Save user to MongoDB
+
+        res.status(201).json(newUser); // Return the created user
+    } catch (error) {
+        console.error('Error creating user:', error);
+        res.status(500).send('Error creating user');
+    }
 });
 
 // GET - List users
-app.get('/users', (req, res) => {
-    res.json(users);
+app.get('/users', async (req, res) => {
+    try {
+        const allUsers = await Users.find(); // Fetch all users from the database
+        res.json(allUsers);
+    } catch (error) {
+        res.status(500).send('Error fetching users: ' + error.message);
+    }
 });
 
 // GET - Find user by username
-app.get('/users/:username', (req, res) => {
-    const user = users.find((u) => u.username.toLowerCase() === req.params.username.toLowerCase());
-    if (user) {
-        res.json(user);
-    } else {
-        res.status(404).send('User not found.');
+app.get('/users/:username', async (req, res) => {
+    try {
+        const user = await Users.findOne({ Username: req.params.username }); // Find user by username
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).send('User not found.');
+        }
+    } catch (error) {
+        res.status(500).send('Error fetching user: ' + error.message);
     }
 });
 
 // PUT - Update user by username
-app.put('/users/:username', (req, res) => {
-    const user = users.find(u => u.username.toLowerCase() === req.params.username.toLowerCase());
-    if (!user) {
-        return res.status(404).send('User not found.');
+app.put('/users/:username', async (req, res) => {
+    try {
+        const user = await Users.findOne({ Username: req.params.username }); // Find user by username
+        if (!user) {
+            return res.status(404).send('User not found.');
+        }
+
+        const { error } = userSchema.validate(req.body); 
+        if (error) {
+            return res.status(400).send(error.details[0].message); 
+        }
+
+        user.Username = req.body.username; 
+        user.Email = req.body.email;
+
+        const updatedUser = await user.save(); // Save updated user
+
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        res.status(500).send('Error updating user: ' + error.message);
     }
-
-    const { error } = userSchema.validate(req.body); 
-    if (error) {
-        return res.status(400).send(error.details[0].message); 
-    }
-
-    user.username = req.body.username; 
-    user.email = req.body.email;
-
-    res.status(200).json(user);
 });
 
 // DELETE - Delete user by username
-app.delete('/users/:username', (req, res) => {
-    const userIndex = users.findIndex((u) => u.username.toLowerCase() === req.params.username.toLowerCase());
-    if (userIndex !== -1) {
-        users.splice(userIndex, 1);
-        res.status(200).send('User has been deregistered.');
-    } else {
-        res.status(404).send('User not found.');
+app.delete('/users/:username', async (req, res) => {
+    try {
+        const user = await Users.findOneAndDelete({ Username: req.params.username }); // Delete user by username
+        if (user) {
+            res.status(200).send('User has been deregistered.');
+        } else {
+            res.status(404).send('User not found.');
+        }
+    } catch (error) {
+        res.status(500).send('Error deleting user: ' + error.message);
     }
 });
 
 // POST - Add a movie to user's favorites
-app.post('/users/:username/favorites', (req, res) => {
-    const user = users.find((u) => u.username.toLowerCase() === req.params.username.toLowerCase());
-    if (!user) {
-        return res.status(404).send('User not found.');
-    }
+app.post('/users/:username/favorites', async (req, res) => {
+    try {
+        const user = await Users.findOne({ Username: req.params.username });
+        if (!user) {
+            return res.status(404).send('User not found.');
+        }
 
-    const { title } = req.body;
-    const movie = movies.find((m) => m.title.toLowerCase() === title.toLowerCase());
-    if (!movie) {
-        return res.status(404).send('Movie not found.');
-    }
+        const { title } = req.body;
+        const movie = movies.find((m) => m.title.toLowerCase() === title.toLowerCase());
+        if (!movie) {
+            return res.status(404).send('Movie not found.');
+        }
 
-    if (!user.favorites) {
-        user.favorites = [];
-    }
+        if (!user.FavoriteMovies) {
+            user.FavoriteMovies = [];
+        }
 
-    if (!user.favorites.includes(title)) {
-        user.favorites.push(title);
-        return res.status(200).send(`Movie "${title}" added to favorites.`);
-    } else {
-        return res.status(400).send('Movie is already in favorites.');
+        if (!user.FavoriteMovies.includes(movie._id)) {
+            user.FavoriteMovies.push(movie._id); // Add movie to favorites using ObjectId
+            await user.save(); // Save updated user
+            return res.status(200).send(`Movie "${title}" added to favorites.`);
+        } else {
+            return res.status(400).send('Movie is already in favorites.');
+        }
+    } catch (error) {
+        res.status(500).send('Error adding movie to favorites: ' + error.message);
     }
 });
 
 // DELETE - Remove a movie from user's favorites
-app.delete('/users/:username/favorites', (req, res) => {
-    const user = users.find((u) => u.username.toLowerCase() === req.params.username.toLowerCase());
-    if (!user) {
-        return res.status(404).send('User not found.');
-    }
+app.delete('/users/:username/favorites', async (req, res) => {
+    try {
+        const user = await Users.findOne({ Username: req.params.username });
+        if (!user) {
+            return res.status(404).send('User not found.');
+        }
 
-    const { title } = req.body;
+        const { title } = req.body;
+        const movie = movies.find((m) => m.title.toLowerCase() === title.toLowerCase());
 
-    if (user.favorites && user.favorites.includes(title)) {
-        user.favorites = user.favorites.filter((fav) => fav !== title);
-        return res.status(200).send(`Movie "${title}" removed from favorites.`);
-    } else {
-        return res.status(404).send('Movie not found in favorites.');
+        if (user.FavoriteMovies && user.FavoriteMovies.includes(movie._id)) {
+            user.FavoriteMovies = user.FavoriteMovies.filter(fav => fav.toString() !== movie._id.toString()); // Remove movie from favorites
+            await user.save(); // Save updated user
+            return res.status(200).send(`Movie "${title}" removed from favorites.`);
+        } else {
+            return res.status(404).send('Movie not found in favorites.');
+        }
+    } catch (error) {
+        res.status(500).send('Error removing movie from favorites: ' + error.message);
     }
 });
 
