@@ -1,4 +1,4 @@
-let allowedOrigins = ['http://localhost:8080', 'http://localhost:1234', 'https://your-movie-app.herokuapp.com'];
+let allowedOrigins = ['http://localhost:8080', 'http://localhost:1234', 'https://filmapi-ab3ce15dfb3f.herokuapp.com'];
 require('dotenv').config();
 
 const express = require('express');
@@ -124,13 +124,13 @@ const movieSchema = Joi.object({
 app.post('/users', validateRequest(userSchema), async (req, res) => {
     try {
         // Check if user already exists
-        const userExists = await Users.findOne({ Username: req.body.Username });
+        const userExists = await Users.findOne({ username: req.body.username });
         if (userExists) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
         // Hash the password
-        const hashedPassword = await bcrypt.hash(req.body.Password, 10);
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
         
         // Create new user with hashed password
         const user = await Users.create({
