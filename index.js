@@ -43,12 +43,83 @@ const movies = [
     {
         title: 'Inception',
         director: 'Christopher Nolan',
-        description: 'A skilled thief...',
+        description: 'A skilled thief, the absolute best in the dangerous art of extraction, stealing valuable secrets from deep within the subconscious during the dream state.',
         genre: 'Science Fiction',
         featured: true,
         imageURL: 'https://m.media-amazon.com/images/I/51fKZ2s8XBL._AC_.jpg'
     },
-    // More movies...
+    {
+        title: 'The Dark Knight',
+        director: 'Christopher Nolan',
+        description: 'When the menace known as The Joker emerges, he causes chaos and havoc among the people of Gotham.',
+        genre: 'Action',
+        featured: true,
+        imageURL: 'https://m.media-amazon.com/images/I/51v5ZpFyaFL._AC_.jpg'
+    },
+    {
+        title: 'Interstellar',
+        director: 'Christopher Nolan',
+        description: 'A group of astronauts travel through a wormhole in search of a new home for humanity.',
+        genre: 'Adventure',
+        featured: false,
+        imageURL: 'https://m.media-amazon.com/images/I/71y7xV-OpML._AC_SY679_.jpg'
+    },
+    {
+        title: 'The Godfather',
+        director: 'Francis Ford Coppola',
+        description: 'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.',
+        genre: 'Crime',
+        featured: true,
+        imageURL: 'https://m.media-amazon.com/images/I/41--oRi8a-L._AC_.jpg'
+    },
+    {
+        title: 'Pulp Fiction',
+        director: 'Quentin Tarantino',
+        description: 'The lives of two mob hitmen, a boxer, a gangster, and his wife intertwine in a series of criminal events.',
+        genre: 'Crime',
+        featured: true,
+        imageURL: 'https://m.media-amazon.com/images/I/51zUbui+gbL._AC_.jpg'
+    },
+    {
+        title: 'The Shawshank Redemption',
+        director: 'Frank Darabont',
+        description: 'Two imprisoned men bond over several years, finding solace and eventual redemption through acts of common decency.',
+        genre: 'Drama',
+        featured: true,
+        imageURL: 'https://m.media-amazon.com/images/I/51NiGlapXlL._AC_.jpg'
+    },
+    {
+        title: 'Fight Club',
+        director: 'David Fincher',
+        description: 'An insomniac office worker and a soap salesman form an underground fight club that evolves into much more.',
+        genre: 'Drama',
+        featured: false,
+        imageURL: 'https://m.media-amazon.com/images/I/51v5ZpFyaFL._AC_.jpg'
+    },
+    {
+        title: 'Forrest Gump',
+        director: 'Robert Zemeckis',
+        description: 'The story of Forrest Gump, a man with a low IQ who achieves great things in life.',
+        genre: 'Drama',
+        featured: true,
+        imageURL: 'https://m.media-amazon.com/images/I/41cXB1tyoOL._AC_.jpg'
+    },
+    {
+        title: 'The Matrix',
+        director: 'The Wachowskis',
+        description: 'A computer hacker learns about the true nature of his reality and his role in the war against its controllers.',
+        genre: 'Science Fiction',
+        featured: false,
+        imageURL: 'https://m.media-amazon.com/images/I/51EG732BV3L._AC_.jpg'
+    },
+    {
+        title: 'The Lord of the Rings: The Return of the King',
+        director: 'Peter Jackson',
+        description: 'Gandalf and Aragorn lead the World of Men against Sauron\'s army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.',
+        genre: 'Fantasy',
+        featured: true,
+        imageURL: 'https://m.media-amazon.com/images/I/51Qvs9i5a%2BL._AC_.jpg'
+    }
 ];
 
 // User data validation schema
