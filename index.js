@@ -55,8 +55,7 @@ app.use('/', auth);
 
 // Connect to MongoDB database
 mongoose.connect(process.env.CONNECTION_URI || 'mongodb://localhost:27017/movies_api_mongo', { 
-    useNewUrlParser: true, 
-    useUnifiedTopology: true 
+    
 })
 .then(() => console.log('Connected to MongoDB Atlas!'))
 .catch(err => console.error('Error connecting to MongoDB Atlas:', err));
