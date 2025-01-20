@@ -9,16 +9,15 @@ const User = Models.User;
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 
-// Local authentication strategy for username/password login
 passport.use(new LocalStrategy(
   {
-    usernameField: 'Username',
-    passwordField: 'Password',
+    usernameField: 'username',    // Changed to lowercase
+    passwordField: 'password',    // Changed to lowercase
     session: false
   },
   async (username, password, done) => {
     try {
-      const user = await User.findOne({ Username: username });
+      const user = await User.findOne({ username: username });  // Changed to lowercase
       
       if (!user) {
         return done(null, false, { 
@@ -26,7 +25,7 @@ passport.use(new LocalStrategy(
         });
       }
 
-      const isValid = await bcrypt.compare(password, user.Password);
+      const isValid = await bcrypt.compare(password, user.password);  // Changed to lowercase
       
       if (!isValid) {
         return done(null, false, { 
@@ -41,7 +40,6 @@ passport.use(new LocalStrategy(
   }
 ));
 
-// JWT authentication strategy for protected routes
 passport.use(new JWTStrategy(
   {
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
@@ -66,9 +64,9 @@ passport.use(new JWTStrategy(
 
       const sanitizedUser = {
         _id: user._id,
-        Username: user.Username,
-        Email: user.Email,
-        FavoriteMovies: user.FavoriteMovies
+        username: user.username,           // Changed to lowercase
+        email: user.email,                 // Changed to lowercase
+        favoritemovies: user.favoritemovies  // Changed to lowercase
       };
 
       return done(null, sanitizedUser);
