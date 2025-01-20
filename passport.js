@@ -11,13 +11,13 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 
 passport.use(new LocalStrategy(
   {
-    usernameField: 'username',    // Changed to lowercase
-    passwordField: 'password',    // Changed to lowercase
+    usernameField: 'username',    
+    passwordField: 'password',    
     session: false
   },
   async (username, password, done) => {
     try {
-      const user = await User.findOne({ username: username });  // Changed to lowercase
+      const user = await User.findOne({ username: username });  
       
       if (!user) {
         return done(null, false, { 
@@ -25,7 +25,7 @@ passport.use(new LocalStrategy(
         });
       }
 
-      const isValid = await bcrypt.compare(password, user.password);  // Changed to lowercase
+      const isValid = await bcrypt.compare(password, user.password);  
       
       if (!isValid) {
         return done(null, false, { 
@@ -64,9 +64,9 @@ passport.use(new JWTStrategy(
 
       const sanitizedUser = {
         _id: user._id,
-        username: user.username,           // Changed to lowercase
-        email: user.email,                 // Changed to lowercase
-        favoritemovies: user.favoritemovies  // Changed to lowercase
+        username: user.username,           
+        email: user.email,                 
+        favoritemovies: user.favoritemovies  
       };
 
       return done(null, sanitizedUser);
