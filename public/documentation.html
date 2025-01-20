@@ -4,125 +4,346 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Movie API Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .endpoint {
+            border-left: 4px solid #007bff;
+            padding-left: 15px;
+            margin: 20px 0;
+        }
+        .method {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .note {
+            background-color: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
 </head>
 <body>
     <h1>Movie API Documentation</h1>
     <p>A RESTful API for managing movie information and user preferences.</p>
 
+    <h2>Base URL</h2>
+    <pre>https://filmapi-ab3ce15dfb3f.herokuapp.com</pre>
+
+    <h2>CORS Policy</h2>
+    <p>This API allows requests from the following origins:</p>
+    <ul>
+        <li>http://localhost:8080</li>
+        <li>http://localhost:1234</li>
+        <li>https://filmapi-ab3ce15dfb3f.herokuapp.com</li>
+    </ul>
+
     <h2>Authentication</h2>
     <p>All endpoints except user registration and login require JWT authentication. Include the JWT token in the Authorization header:</p>
     <pre>Authorization: Bearer your-jwt-token</pre>
+    <div class="note">
+        <strong>Note:</strong> JWT tokens expire after 24 hours and must be renewed through the login endpoint.
+    </div>
 
     <h2>Endpoints</h2>
 
     <h3>User Authentication</h3>
-    <h4>POST /login</h4>
-    <p><strong>Description:</strong> Authenticate user and get JWT token</p>
-    <p><strong>Body:</strong></p>
-    <pre>
+    <div class="endpoint">
+        <h4><span class="method">POST</span> /login</h4>
+        <p><strong>Description:</strong> Authenticate user and get JWT token</p>
+        <p><strong>Authentication:</strong> Not required</p>
+        <p><strong>Request Body:</strong></p>
+        <pre>
 {
     "Username": "yourUsername",
     "Password": "yourPassword"
 }
-    </pre>
-    <p><strong>Response:</strong></p>
-    <pre>
+        </pre>
+        <p><strong>Success Response (200):</strong></p>
+        <pre>
 {
     "user": {
         "_id": "user_id",
         "Username": "username",
-        "Email": "email",
-        "FavoriteMovies": []
+        "Email": "email@example.com",
+        "Birthday": "1990-01-01T00:00:00.000Z",
+        "FavoriteMovies": ["movieId1", "movieId2"]
     },
-    "token": "jwt_token"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5..."
 }
-    </pre>
+        </pre>
+        <p><strong>Error Response (401):</strong></p>
+        <pre>
+{
+    "message": "Incorrect username or password"
+}
+        </pre>
+    </div>
 
-    <h4>POST /users</h4>
-    <p><strong>Description:</strong> Register new user</p>
-    <p><strong>Body:</strong></p>
-    <pre>
+    <div class="endpoint">
+        <h4><span class="method">POST</span> /users</h4>
+        <p><strong>Description:</strong> Register new user</p>
+        <p><strong>Authentication:</strong> Not required</p>
+        <p><strong>Request Body:</strong></p>
+        <pre>
 {
     "Username": "yourUsername",
     "Password": "yourPassword123!",
     "Email": "your@email.com",
     "Birthday": "1990-01-01"
 }
-    </pre>
-    <p><strong>Validation:</strong></p>
-    <ul>
-        <li>Username: 3-30 characters, alphanumeric</li>
-        <li>Password: Minimum 8 characters, must include letter, number, and special character</li>
-        <li>Email: Valid email format</li>
-        <li>Birthday: ISO date format (optional)</li>
-    </ul>
+        </pre>
+        <p><strong>Validation Rules:</strong></p>
+        <ul>
+            <li>Username: 3-30 characters, alphanumeric and underscores only</li>
+            <li>Password: Minimum 8 characters, must include at least one letter, one number, and one special character</li>
+            <li>Email: Valid email format</li>
+            <li>Birthday: ISO 8601 date format (YYYY-MM-DD)</li>
+        </ul>
+        <p><strong>Success Response (201):</strong></p>
+        <pre>
+{
+    "message": "User created successfully",
+    "user": {
+        "username": "yourUsername",
+        "email": "your@email.com",
+        "birthday": "1990-01-01T00:00:00.000Z",
+        "favoritemovies": []
+    }
+}
+        </pre>
+        <p><strong>Error Response (400):</strong></p>
+        <pre>
+{
+    "message": "Username can only contain alphanumeric characters and underscores"
+}
+        </pre>
+    </div>
 
     <h3>Movies</h3>
-    <h4>GET /movies</h4>
-    <p><strong>Description:</strong> Get all movies</p>
-    <p><strong>Authentication:</strong> Required</p>
+    <div class="endpoint">
+        <h4><span class="method">GET</span> /movies</h4>
+        <p><strong>Description:</strong> Get all movies</p>
+        <p><strong>Authentication:</strong> Required</p>
+        <p><strong>Success Response (200):</strong></p>
+        <pre>
+[
+    {
+        "_id": "movieId",
+        "title": "Movie Title",
+        "description": "Movie description",
+        "director": {
+            "name": "Director Name",
+            "bio": "Director biography",
+            "birth": "1970-01-01"
+        },
+        "genre": {
+            "name": "genre name",
+            "description": "Genre description"
+        },
+        "imagepath": "https://example.com/image.jpg",
+        "featured": true
+    },
+    // ... more movies
+]
+        </pre>
+    </div>
 
-    <h4>GET /movies/:id</h4>
-    <p><strong>Description:</strong> Get movie by ID</p>
-    <p><strong>Authentication:</strong> Required</p>
+    <div class="endpoint">
+        <h4><span class="method">GET</span> /movies/:id</h4>
+        <p><strong>Description:</strong> Get movie by ID</p>
+        <p><strong>Authentication:</strong> Required</p>
+        <p><strong>URL Parameters:</strong></p>
+        <ul>
+            <li>id: Movie ID (ObjectId)</li>
+        </ul>
+        <p><strong>Success Response (200):</strong></p>
+        <pre>
+{
+    "_id": "movieId",
+    "title": "Movie Title",
+    "description": "Movie description",
+    "director": {
+        "name": "Director Name",
+        "bio": "Director biography",
+        "birth": "1970-01-01"
+    },
+    "genre": {
+        "name": "genre name",
+        "description": "Genre description"
+    },
+    "imagepath": "https://example.com/image.jpg",
+    "featured": true
+}
+        </pre>
+        <p><strong>Error Response (404):</strong></p>
+        <pre>
+{
+    "message": "Movie not found"
+}
+        </pre>
+    </div>
 
-    <h4>GET /movies/genre/:genreName</h4>
-    <p><strong>Description:</strong> Get movies by genre</p>
-    <p><strong>Authentication:</strong> Required</p>
+    <div class="endpoint">
+        <h4><span class="method">GET</span> /movies/genre/:genreName</h4>
+        <p><strong>Description:</strong> Get movies by genre</p>
+        <p><strong>Authentication:</strong> Required</p>
+        <p><strong>URL Parameters:</strong></p>
+        <ul>
+            <li>genreName: Name of the genre (case-insensitive)</li>
+        </ul>
+        <div class="note">
+            <strong>Note:</strong> Genre names are case-insensitive and include: drama, action, adventure, science fiction, crime, fantasy
+        </div>
+    </div>
 
-    <h4>GET /movies/director/:directorName</h4>
-    <p><strong>Description:</strong> Get movies by director</p>
-    <p><strong>Authentication:</strong> Required</p>
+    <div class="endpoint">
+        <h4><span class="method">GET</span> /movies/director/:directorName</h4>
+        <p><strong>Description:</strong> Get movies by director</p>
+        <p><strong>Authentication:</strong> Required</p>
+        <p><strong>URL Parameters:</strong></p>
+        <ul>
+            <li>directorName: Director's name (supports spaces and underscores)</li>
+        </ul>
+        <div class="note">
+            <strong>Note:</strong> Director names can be provided with either spaces or underscores (e.g., "Christopher Nolan" or "Christopher_Nolan")
+        </div>
+    </div>
 
     <h3>User Operations</h3>
-    <h4>GET /users</h4>
-    <p><strong>Description:</strong> Get all users</p>
-    <p><strong>Authentication:</strong> Required</p>
+    <div class="endpoint">
+        <h4><span class="method">GET</span> /users</h4>
+        <p><strong>Description:</strong> Get all users</p>
+        <p><strong>Authentication:</strong> Required</p>
+        <p><strong>Success Response (200):</strong></p>
+        <pre>
+[
+    {
+        "_id": "userId",
+        "username": "username",
+        "email": "email@example.com",
+        "birthday": "1990-01-01T00:00:00.000Z",
+        "favoritemovies": ["movieId1", "movieId2"]
+    },
+    // ... more users
+]
+        </pre>
+    </div>
 
-    <h4>GET /users/:username</h4>
-    <p><strong>Description:</strong> Get user by username</p>
-    <p><strong>Authentication:</strong> Required</p>
+    <div class="endpoint">
+        <h4><span class="method">GET</span> /users/:username</h4>
+        <p><strong>Description:</strong> Get user by username</p>
+        <p><strong>Authentication:</strong> Required</p>
+        <p><strong>URL Parameters:</strong></p>
+        <ul>
+            <li>username: User's username</li>
+        </ul>
+    </div>
 
-    <h4>PUT /users/:username</h4>
-    <p><strong>Description:</strong> Update user information</p>
-    <p><strong>Authentication:</strong> Required</p>
-    <p><strong>Body:</strong></p>
-    <pre>
+    <div class="endpoint">
+        <h4><span class="method">PUT</span> /users/:username</h4>
+        <p><strong>Description:</strong> Update user information</p>
+        <p><strong>Authentication:</strong> Required</p>
+        <p><strong>URL Parameters:</strong></p>
+        <ul>
+            <li>username: User's current username</li>
+        </ul>
+        <p><strong>Request Body:</strong></p>
+        <pre>
 {
     "Username": "newUsername",
     "Password": "newPassword123!",
     "Email": "new@email.com",
     "Birthday": "1990-01-01"
 }
-    </pre>
-
-    <h4>DELETE /users/:username</h4>
-    <p><strong>Description:</strong> Delete user account</p>
-    <p><strong>Authentication:</strong> Required</p>
-
-    <h4>POST /users/:username/favorites</h4>
-    <p><strong>Description:</strong> Add movie to favorites</p>
-    <p><strong>Authentication:</strong> Required</p>
-    <p><strong>Body:</strong></p>
-    <pre>
+        </pre>
+        <p><strong>Success Response (200):</strong></p>
+        <pre>
 {
-    "movieId": "movie_id"
+    "message": "User updated successfully",
+    "user": {
+        "username": "newUsername",
+        "email": "new@email.com",
+        "birthday": "1990-01-01T00:00:00.000Z",
+        "favoritemovies": ["movieId1", "movieId2"]
+    }
 }
-    </pre>
+        </pre>
+    </div>
 
-    <h4>DELETE /users/:username/favorites/:movieId</h4>
-    <p><strong>Description:</strong> Remove movie from favorites</p>
-    <p><strong>Authentication:</strong> Required</p>
+    <div class="endpoint">
+        <h4><span class="method">DELETE</span> /users/:username</h4>
+        <p><strong>Description:</strong> Delete user account</p>
+        <p><strong>Authentication:</strong> Required</p>
+        <p><strong>URL Parameters:</strong></p>
+        <ul>
+            <li>username: User's username</li>
+        </ul>
+        <p><strong>Success Response (200):</strong></p>
+        <pre>"User has been deregistered."</pre>
+    </div>
+
+    <div class="endpoint">
+        <h4><span class="method">POST</span> /users/:username/favorites</h4>
+        <p><strong>Description:</strong> Add movie to favorites</p>
+        <p><strong>Authentication:</strong> Required</p>
+        <p><strong>URL Parameters:</strong></p>
+        <ul>
+            <li>username: User's username</li>
+        </ul>
+        <p><strong>Request Body:</strong></p>
+        <pre>
+{
+    "movieId": "movieId"
+}
+        </pre>
+        <p><strong>Success Response (200):</strong></p>
+        <pre>
+{
+    "message": "Movie added to favorites",
+    "favoritemovies": ["movieId1", "movieId2", "newMovieId"]
+}
+        </pre>
+    </div>
+
+    <div class="endpoint">
+        <h4><span class="method">DELETE</span> /users/:username/favorites/:movieId</h4>
+        <p><strong>Description:</strong> Remove movie from favorites</p>
+        <p><strong>Authentication:</strong> Required</p>
+        <p><strong>URL Parameters:</strong></p>
+        <ul>
+            <li>username: User's username</li>
+            <li>movieId: ID of movie to remove</li>
+        </ul>
+        <p><strong>Success Response (200):</strong></p>
+        <pre>"Movie removed from favorites."</pre>
+    </div>
 
     <h2>Error Responses</h2>
     <p>The API uses standard HTTP response codes:</p>
     <ul>
-        <li>200: Success</li>
-        <li>201: Created</li>
-        <li>400: Bad Request</li>
-        <li>401: Unauthorized</li>
-        <li>404: Not Found</li>
-        <li>500: Internal Server Error</li>
+        <li><strong>200</strong>: Success</li>
+        <li><strong>201</strong>: Created</li>
+        <li><strong>400</strong>: Bad Request - Invalid input parameters or validation error</li>
+        <li><strong>401</strong>: Unauthorized - Missing or invalid JWT token</li>
+        <li><strong>404</strong>: Not Found - Resource not found</li>
+        <li><strong>500</strong>: Internal Server Error - Server-side error</li>
     </ul>
+
+    <div class="note">
+        <strong>Rate Limiting:</strong> The API currently does not implement rate limiting, but users should implement reasonable limits on their request frequency.
+    </div>
 </body>
 </html>
