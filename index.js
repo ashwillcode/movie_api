@@ -236,26 +236,46 @@ app.delete('/users/:username', passport.authenticate('jwt', { session: false }),
 // Add movie to favorites
 app.post('/users/:username/favorites', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
-        const user = await Users.findOne({ username: req.params.username });
-        if (!user) {
-            return res.status(404).send('User not found.');
+        // First check if the movieId is a valid ObjectId
+        const { movieId } = req.body;
+        if (!mongoose.Types.ObjectId.isValid(movieId)) {
+            return res.status(400).json({
+                message: 'Invalid movie ID format'
+            });
         }
 
-        const { movieId } = req.body;
+        const user = await Users.findOne({ username: req.params.username });
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+
         const movie = await Movies.findById(movieId);
         if (!movie) {
-            return res.status(404).send('Movie not found.');
+            return res.status(404).json({
+                message: 'Movie not found'
+            });
         }
 
         if (!user.favoritemovies.includes(movieId)) {
             user.favoritemovies.push(movieId);
             await user.save();
-            return res.status(200).send('Movie added to favorites.');
+            return res.status(200).json({
+                message: 'Movie added to favorites',
+                favoritemovies: user.favoritemovies
+            });
         } else {
-            return res.status(400).send('Movie is already in favorites.');
+            return res.status(400).json({
+                message: 'Movie is already in favorites'
+            });
         }
     } catch (error) {
-        res.status(500).send('Error adding movie to favorites: ' + error.message);
+        console.error('Error adding movie to favorites:', error);
+        res.status(500).json({
+            message: 'Error adding movie to favorites',
+            error: error.message
+        });
     }
 });
 
