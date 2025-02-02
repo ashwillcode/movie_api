@@ -1,5 +1,5 @@
 // Configure allowed origins for CORS
-let allowedOrigins = ['http://localhost:8080', 'http://localhost:1234', 'https://filmapi-ab3ce15dfb3f.herokuapp.com'];
+let allowedOrigins = ['http://localhost:8080', 'http://localhost:1234', 'https://filmapi.herokuapp.com'];
 require('dotenv').config();
 
 const express = require('express');
