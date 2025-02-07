@@ -1,6 +1,9 @@
 // Configure allowed origins for CORS
-let allowedOrigins = ['http://localhost:8080', 'http://localhost:1234', 'https://filmapi-ab3ce15dfb3f.herokuapp.com'];
-require('dotenv').config();
+let allowedOrigins = [
+    'http://localhost:8080', 
+    'http://localhost:1234',
+    'https://filmapi-ab3ce15dfb3f.herokuapp.com'
+];
 
 const express = require('express');
 const morgan = require('morgan'); 
@@ -301,7 +304,7 @@ app.delete('/users/:username/favorites/:movieId', passport.authenticate('jwt', {
 });
 
 // Get all movies
-app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.get('/movies', async (req, res) => {
     try {
         const movies = await Movies.find();
         res.status(200).json(movies);
