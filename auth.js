@@ -33,7 +33,7 @@ router.post('/login', (req, res, next) => {
         _id: user._id,
         username: user.username,
         email: user.email,
-        favoritemovies: user.favoritemovies  // Changed from favoriteMovies
+        favoritemovies: user.favoritemovies  
       };
 
       return res.json({

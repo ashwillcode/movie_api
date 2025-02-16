@@ -287,19 +287,34 @@ app.delete('/users/:username/favorites/:movieId', passport.authenticate('jwt', {
     try {
         const user = await Users.findOne({ username: req.params.username });
         if (!user) {
-            return res.status(404).send('User not found.');
+            return res.status(404).json({
+                message: 'User not found',
+                favoritemovies: []
+            });
         }
 
         const movieId = req.params.movieId;
         if (user.favoritemovies.includes(movieId)) {
             user.favoritemovies = user.favoritemovies.filter(id => id.toString() !== movieId);
             await user.save();
-            return res.status(200).send('Movie removed from favorites.');
+            
+            return res.status(200).json({
+                message: 'Movie removed from favorites',
+                favoritemovies: user.favoritemovies
+            });
         } else {
-            return res.status(404).send('Movie not found in favorites.');
+            return res.status(404).json({
+                message: 'Movie not found in favorites',
+                favoritemovies: user.favoritemovies
+            });
         }
     } catch (error) {
-        res.status(500).send('Error removing movie from favorites: ' + error.message);
+        console.error('Error removing movie from favorites:', error);
+        res.status(500).json({
+            message: 'Error removing movie from favorites',
+            error: error.message,
+            favoritemovies: user?.favoritemovies || []
+        });
     }
 });
 
