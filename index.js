@@ -2,7 +2,8 @@
 let allowedOrigins = [
     'http://localhost:8080', 
     'http://localhost:1234',
-    'https://filmapi-ab3ce15dfb3f.herokuapp.com'
+    'https://filmapi-ab3ce15dfb3f.herokuapp.com',
+    'https://film-client.netlify.app'
 ];
 
 const express = require('express');
@@ -24,6 +25,8 @@ const app = express();
 app.use(express.json());    
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('common')); 
+
+// Updated CORS configuration
 app.use(cors({
   origin: (origin, callback) => {
     if(!origin) return callback(null, true);
@@ -32,7 +35,10 @@ app.use(cors({
       return callback(new Error(message), false);
     }
     return callback(null, true);
-  }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 app.use(passport.initialize());
 app.use((req, res, next) => {
