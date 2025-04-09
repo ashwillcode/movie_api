@@ -2,6 +2,7 @@
 let allowedOrigins = [
     'http://localhost:8080', 
     'http://localhost:1234',
+    'http://localhost:4200',  // Angular development server
     'https://filmapi-ab3ce15dfb3f.herokuapp.com',
     'https://film-client.netlify.app'
 ];
