@@ -107,7 +107,7 @@ const userSchema = Joi.object({
         .messages({
             'string.email': 'Please enter a valid email address'
         }),
-    birthday: Joi.date()
+    birthDate: Joi.date()
         .iso()
         .messages({
             'date.base': 'Please enter a valid date in ISO format (YYYY-MM-DD)'
@@ -131,10 +131,10 @@ const movieSchema = Joi.object({
     director: Joi.object({
         name: Joi.string().required(),
         bio: Joi.string(),
-        birthyear: Joi.number(),
-        deathyear: Joi.number()
+        birth: Joi.date(),
+        death: Joi.date()
     }).required(),
-    imageurl: Joi.string().uri(),
+    imagePath: Joi.string().uri(),
     featured: Joi.boolean()
 });
 
@@ -152,16 +152,17 @@ app.post('/users', validateRequest(userSchema), async (req, res) => {
             username: req.body.username,
             password: hashedPassword,
             email: req.body.email,
-            birthday: req.body.birthday
+            birthDate: req.body.birthDate
         });
 
         res.status(201).json({
             message: 'User created successfully',
             user: {
+                id: user._id,
                 username: user.username,
                 email: user.email,
-                birthday: user.birthday,
-                favoritemovies: user.favoritemovies
+                birthDate: user.birthDate,
+                favoriteMovies: user.favoriteMovies
             }
         });
     } catch (error) {
@@ -214,7 +215,7 @@ app.put('/users/:username',
                         username: req.body.username,
                         password: hashedPassword,
                         email: req.body.email,
-                        birthday: req.body.birthday
+                        birthDate: req.body.birthDate
                     }
                 },
                 { new: true }
@@ -223,10 +224,11 @@ app.put('/users/:username',
             res.json({
                 message: 'User updated successfully',
                 user: {
+                    id: updatedUser._id,
                     username: updatedUser.username,
                     email: updatedUser.email,
-                    birthday: updatedUser.birthday,
-                    favoritemovies: updatedUser.favoritemovies
+                    birthDate: updatedUser.birthDate,
+                    favoriteMovies: updatedUser.favoriteMovies
                 }
             });
         } catch (error) {
@@ -275,12 +277,12 @@ app.post('/users/:username/favorites', passport.authenticate('jwt', { session: f
             });
         }
 
-        if (!user.favoritemovies.includes(movieId)) {
-            user.favoritemovies.push(movieId);
+        if (!user.favoriteMovies.includes(movieId)) {
+            user.favoriteMovies.push(movieId);
             await user.save();
             return res.status(200).json({
                 message: 'Movie added to favorites',
-                favoritemovies: user.favoritemovies
+                favoriteMovies: user.favoriteMovies
             });
         } else {
             return res.status(400).json({
@@ -303,23 +305,23 @@ app.delete('/users/:username/favorites/:movieId', passport.authenticate('jwt', {
         if (!user) {
             return res.status(404).json({
                 message: 'User not found',
-                favoritemovies: []
+                favoriteMovies: []
             });
         }
 
         const movieId = req.params.movieId;
-        if (user.favoritemovies.includes(movieId)) {
-            user.favoritemovies = user.favoritemovies.filter(id => id.toString() !== movieId);
+        if (user.favoriteMovies.includes(movieId)) {
+            user.favoriteMovies = user.favoriteMovies.filter(id => id.toString() !== movieId);
             await user.save();
             
             return res.status(200).json({
                 message: 'Movie removed from favorites',
-                favoritemovies: user.favoritemovies
+                favoriteMovies: user.favoriteMovies
             });
         } else {
             return res.status(404).json({
                 message: 'Movie not found in favorites',
-                favoritemovies: user.favoritemovies
+                favoriteMovies: user.favoriteMovies
             });
         }
     } catch (error) {
@@ -327,7 +329,7 @@ app.delete('/users/:username/favorites/:movieId', passport.authenticate('jwt', {
         res.status(500).json({
             message: 'Error removing movie from favorites',
             error: error.message,
-            favoritemovies: user?.favoritemovies || []
+            favoriteMovies: user?.favoriteMovies || []
         });
     }
 });

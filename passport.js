@@ -63,10 +63,10 @@ passport.use(new JWTStrategy(
       }
 
       const sanitizedUser = {
-        _id: user._id,
+        id: user._id,
         username: user.username,           
         email: user.email,                 
-        favoritemovies: user.favoritemovies  
+        favoriteMovies: user.favoriteMovies  
       };
 
       return done(null, sanitizedUser);
