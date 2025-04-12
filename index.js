@@ -116,26 +116,25 @@ const userSchema = Joi.object({
 
 // Movie validation schema
 const movieSchema = Joi.object({
-    title: Joi.string()
+    Title: Joi.string()
         .min(1)
         .max(100)
         .required(),
-    description: Joi.string()
+    Description: Joi.string()
         .min(1)
         .max(1000)
         .required(),
-    genre: Joi.object({
-        name: Joi.string().required(),
-        description: Joi.string()
+    Genre: Joi.object({
+        Name: Joi.string().required(),
+        Description: Joi.string().required()
     }).required(),
-    director: Joi.object({
-        name: Joi.string().required(),
-        bio: Joi.string(),
-        birth: Joi.date(),
-        death: Joi.date()
+    Director: Joi.object({
+        Name: Joi.string().required(),
+        Bio: Joi.string().required(),
+        Birth: Joi.date().iso().allow(null)
     }).required(),
-    imagePath: Joi.string().uri(),
-    featured: Joi.boolean()
+    ImagePath: Joi.string().uri().required(),
+    Featured: Joi.boolean().default(false)
 });
 
 // Create new user
@@ -364,7 +363,7 @@ app.get('/movies/:id', passport.authenticate('jwt', { session: false }), async (
 // Get movies by genre
 app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
-        const movies = await Movies.find({ 'genre.name': req.params.genreName });
+        const movies = await Movies.find({ 'Genre.Name': req.params.genreName });
         res.status(200).json(movies);
     } catch (error) {
         console.error(error);
@@ -375,7 +374,7 @@ app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: fals
 // Get movies by director
 app.get('/movies/director/:directorName', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
-        const movies = await Movies.find({ 'director.name': req.params.directorName });
+        const movies = await Movies.find({ 'Director.Name': req.params.directorName });
         res.status(200).json(movies);
     } catch (error) {
         console.error(error);
