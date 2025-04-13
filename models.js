@@ -1,5 +1,25 @@
+/**
+ * @fileoverview Defines the MongoDB schemas and models for the Movie API.
+ * @module models
+ */
+
 const mongoose = require('mongoose');
 
+/**
+ * Schema definition for movies in the database.
+ * @typedef {Object} MovieSchema
+ * @property {string} Title - The title of the movie
+ * @property {string} Description - A detailed description of the movie
+ * @property {Object} Genre - The genre information
+ * @property {string} Genre.Name - The name of the genre
+ * @property {string} Genre.Description - Description of the genre
+ * @property {Object} Director - Information about the movie's director
+ * @property {string} Director.Name - The director's name
+ * @property {string} Director.Bio - The director's biography
+ * @property {Date} Director.Birth - The director's birth date
+ * @property {string} ImagePath - Path to the movie's poster image
+ * @property {boolean} Featured - Whether the movie is featured
+ */
 const movieSchema = mongoose.Schema({
     Title: { type: String, required: true },
     Description: { type: String, required: true },
@@ -56,6 +76,15 @@ const movieSchema = mongoose.Schema({
     }
 });
 
+/**
+ * Schema definition for users in the database.
+ * @typedef {Object} UserSchema
+ * @property {string} username - Unique username for the user
+ * @property {string} password - Hashed password (not returned in responses)
+ * @property {string} email - User's email address
+ * @property {Date} birthDate - User's date of birth
+ * @property {Array<mongoose.Schema.Types.ObjectId>} favoriteMovies - Array of references to favorite movies
+ */
 const userSchema = mongoose.Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -74,7 +103,16 @@ const userSchema = mongoose.Schema({
     }
 });
 
+/**
+ * Movie model for database operations
+ * @type {mongoose.Model}
+ */
 const Movie = mongoose.model('Movie', movieSchema);
+
+/**
+ * User model for database operations
+ * @type {mongoose.Model}
+ */
 const User = mongoose.model('User', userSchema);
 
 module.exports.Movie = Movie;

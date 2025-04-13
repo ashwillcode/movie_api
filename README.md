@@ -9,15 +9,15 @@ The **Movie API** is a RESTful API built with Node.js and Express that provides 
 ## Table of Contents
 
 1. [Features](#features)
-2. [Technical] (#technicalrequirements)
-3. [Dependencies] (#dependencies)
+2. [Technical Requirements](#technical-requirements)
+3. [Dependencies](#dependencies)
 4. [Endpoints](#endpoints)
 5. [Installation](#installation)
 6. [Usage](#usage)
-7. [Hosting] (#hosting)
-8. [Documentation] (#documentation)
-9. [Version] (#version)
-10. [Author] (#author)
+7. [Hosting](#hosting)
+8. [Documentation](#documentation)
+9. [Version](#version)
+10. [Author](#author)
 11. [License](#license)
 
 ---
@@ -31,25 +31,28 @@ The **Movie API** is a RESTful API built with Node.js and Express that provides 
 - **Error Handling**: Provides meaningful error responses for invalid requests.
 - **Logging**: Tracks all incoming requests with timestamps and saves them to `log.txt`.
 - **Input Validation**: Input validation and sanitization. 
-- **Cors**: support for cross-origin requests. 
+- **CORS**: Support for cross-origin requests.
+- **Documentation**: Comprehensive JSDoc documentation for all modules and functions.
 
 ---
 
 ## Technical Requirements
 
--Node.js
--Express
--MongoDB
--Mongoose
--Passport JWT
--bcryptjs
--CORS
--Express Validator
+- Node.js
+- Express
+- MongoDB
+- Mongoose
+- Passport JWT
+- bcryptjs
+- CORS
+- Express Validator
+- JSDoc (for documentation)
 
 ---
 
 ## Dependencies
 
+```json
 {
   "bcryptjs": "^2.4.3",
   "body-parser": "^1.20.2",
@@ -61,8 +64,10 @@ The **Movie API** is a RESTful API built with Node.js and Express that provides 
   "morgan": "^1.10.0",
   "passport": "^0.6.0",
   "passport-jwt": "^4.0.1",
-  "passport-local": "^1.0.0"
+  "passport-local": "^1.0.0",
+  "jsdoc": "^4.0.2"
 }
+```
 
 ---
 
@@ -92,16 +97,25 @@ The **Movie API** is a RESTful API built with Node.js and Express that provides 
 1. Clone the repository:
    ```bash
    git clone https://github.com/your-username/movie_api.git
+   ```
 2. Navigate to the project directory:
-    cd movie_api
-3. Install dependancies:
-    npm install 
+   ```bash
+   cd movie_api
+   ```
+3. Install dependencies:
+   ```bash
+   npm install 
+   ```
 4. Create a .env file with config: 
-    CONNECTION_URI=your_mongodb_uri
-    JWT_SECRET=your_jwt_secret
-    PORT=8080
+   ```
+   CONNECTION_URI=your_mongodb_uri
+   JWT_SECRET=your_jwt_secret
+   PORT=8080
+   ```
 5. Start the server: 
-    node index.js 
+   ```bash
+   node index.js 
+   ```
 
 --- 
 
@@ -109,19 +123,40 @@ The **Movie API** is a RESTful API built with Node.js and Express that provides 
 
 1. Ensure Node.js is installed on your system. 
 2. Run the server. 
-3. use an API testing tool to interact with endpoints. 
+3. Use an API testing tool to interact with endpoints. 
 
 ---
 
 ## Hosting
 
-This API is hosted on Heroku with the database hosted on MongoDB Atlas
+This API is hosted on Heroku with the database hosted on MongoDB Atlas.
 
 ---
 
 ## Documentation
 
-Full API documentation is available in the public/documentation.html file. 
+The API is fully documented using JSDoc. To generate the documentation:
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Generate documentation:
+   ```bash
+   npm run docs
+   ```
+
+3. View the documentation:
+   - Open `out/index.html` in your web browser
+   - The documentation includes:
+     - API endpoints and their usage
+     - Data models and schemas
+     - Authentication flows
+     - Request/response formats
+     - Error handling
+
+The documentation is automatically generated from JSDoc comments in the source code and is kept up-to-date with the codebase.
 
 ---
 
@@ -139,6 +174,6 @@ Ashley Williams
 
 ## License
 
- GNU AFFERO GENERAL PUBLIC LICENSE
- Version 3, 19 November 2007
+GNU AFFERO GENERAL PUBLIC LICENSE
+Version 3, 19 November 2007
 

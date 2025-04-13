@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Passport authentication configuration for the Movie API.
+ * @module passport
+ */
+
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const passportJWT = require('passport-jwt');
@@ -7,8 +12,16 @@ const bcrypt = require('bcryptjs');
 const Models = require('./models.js');
 const User = Models.User;
 
+/** Secret key for JWT verification */
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 
+/**
+ * Local authentication strategy configuration
+ * Verifies username and password against database
+ * @param {string} username - Username to verify
+ * @param {string} password - Password to verify
+ * @param {Function} done - Passport callback
+ */
 passport.use(new LocalStrategy(
   {
     usernameField: 'username',    
@@ -40,6 +53,12 @@ passport.use(new LocalStrategy(
   }
 ));
 
+/**
+ * JWT authentication strategy configuration
+ * Verifies JWT token from Authorization header
+ * @param {Object} jwtPayload - Decoded JWT payload
+ * @param {Function} done - Passport callback
+ */
 passport.use(new JWTStrategy(
   {
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
@@ -76,10 +95,20 @@ passport.use(new JWTStrategy(
   }
 ));
 
+/**
+ * Serializes user for the session
+ * @param {Object} user - User object
+ * @param {Function} done - Passport callback
+ */
 passport.serializeUser((user, done) => {
   done(null, user._id);
 });
 
+/**
+ * Deserializes user from the session
+ * @param {string} id - User ID
+ * @param {Function} done - Passport callback
+ */
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);

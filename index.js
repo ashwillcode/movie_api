@@ -1,8 +1,18 @@
+/**
+ * @fileoverview Main application file for the Movie API.
+ * This file sets up the Express server, configures middleware,
+ * defines routes, and handles database connections.
+ * @module index
+ */
+
 // Load environment variables
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-// Configure allowed origins for CORS
+/**
+ * List of allowed origins for CORS requests
+ * @type {string[]}
+ */
 let allowedOrigins = [
     'http://localhost:8080', 
     'http://localhost:1234',
@@ -26,6 +36,10 @@ const axios = require('axios');
 require('./passport');
 const auth = require('./auth');
 
+/**
+ * Express application instance
+ * @type {Express}
+ */
 const app = express();
 
 // Configure middleware
@@ -68,7 +82,11 @@ app.use((req, res, next) => {
     next();
 });
 
-// Validation middleware
+/**
+ * Middleware for validating request bodies against a Joi schema
+ * @param {Object} schema - Joi validation schema
+ * @returns {Function} Express middleware function
+ */
 const validateRequest = (schema) => {
     return (req, res, next) => {
         const { error } = schema.validate(req.body);
@@ -103,7 +121,10 @@ mongoose.connect(process.env.CONNECTION_URI)
 const Movies = Models.Movie;
 const Users = Models.User;
 
-// User validation schema
+/**
+ * User validation schema for registration and updates
+ * @type {Joi.ObjectSchema}
+ */
 const userSchema = Joi.object({
     username: Joi.string()
         .min(3)
@@ -134,7 +155,10 @@ const userSchema = Joi.object({
         })
 });
 
-// Movie validation schema
+/**
+ * Movie validation schema for creation and updates
+ * @type {Joi.ObjectSchema}
+ */
 const movieSchema = Joi.object({
     Title: Joi.string()
         .min(1)
@@ -157,7 +181,17 @@ const movieSchema = Joi.object({
     Featured: Joi.boolean().default(false)
 }).unknown(true); // Allow unknown properties to handle both cases
 
-// Create new user
+/**
+ * Create a new user account
+ * @name POST/users
+ * @function
+ * @param {Object} req.body - User registration data
+ * @param {string} req.body.username - Desired username
+ * @param {string} req.body.password - User's password
+ * @param {string} req.body.email - User's email address
+ * @param {string} [req.body.birthDate] - User's birth date (ISO format)
+ * @returns {Object} Created user object
+ */
 app.post('/users', validateRequest(userSchema), async (req, res) => {
     try {
         const userExists = await Users.findOne({ username: req.body.username });
@@ -190,7 +224,14 @@ app.post('/users', validateRequest(userSchema), async (req, res) => {
     }
 });
 
-// Get all users
+/**
+ * Get all users in the system
+ * @name GET/users
+ * @function
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Array} List of all users
+ */
 app.get('/users', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const allUsers = await Users.find();
@@ -200,7 +241,15 @@ app.get('/users', passport.authenticate('jwt', { session: false }), async (req, 
     }
 });
 
-// Get user by username
+/**
+ * Get a specific user by username
+ * @name GET/users/:username
+ * @function
+ * @param {Object} req - Express request object
+ * @param {string} req.params.username - Username to look up
+ * @param {Object} res - Express response object
+ * @returns {Object} User details
+ */
 app.get('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const user = await Users.findOne({ username: req.params.username });
@@ -214,7 +263,20 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), as
     }
 });
 
-// Update user
+/**
+ * Update a user's information
+ * @name PUT/users/:username
+ * @function
+ * @param {Object} req - Express request object
+ * @param {string} req.params.username - Username of the user to update
+ * @param {Object} req.body - Updated user data
+ * @param {string} req.body.username - New username
+ * @param {string} req.body.password - New password
+ * @param {string} req.body.email - New email
+ * @param {string} [req.body.birthDate] - New birth date
+ * @param {Object} res - Express response object
+ * @returns {Object} Updated user object
+ */
 app.put('/users/:username', 
     passport.authenticate('jwt', { session: false }), 
     validateRequest(userSchema), 
@@ -257,7 +319,15 @@ app.put('/users/:username',
     }
 );
 
-// Delete user
+/**
+ * Delete a user account
+ * @name DELETE/users/:username
+ * @function
+ * @param {Object} req - Express request object
+ * @param {string} req.params.username - Username of the user to delete
+ * @param {Object} res - Express response object
+ * @returns {string} Success message
+ */
 app.delete('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const user = await Users.findOneAndDelete({ username: req.params.username });
@@ -271,7 +341,17 @@ app.delete('/users/:username', passport.authenticate('jwt', { session: false }),
     }
 });
 
-// Add movie to favorites
+/**
+ * Add a movie to user's favorites
+ * @name POST/users/:username/favorites
+ * @function
+ * @param {Object} req - Express request object
+ * @param {string} req.params.username - Username
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.movieId - ID of movie to add to favorites
+ * @param {Object} res - Express response object
+ * @returns {Object} Updated favorites list
+ */
 app.post('/users/:username/favorites', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         // First check if the movieId is a valid ObjectId
@@ -317,7 +397,16 @@ app.post('/users/:username/favorites', passport.authenticate('jwt', { session: f
     }
 });
 
-// Remove movie from favorites
+/**
+ * Remove a movie from user's favorites
+ * @name DELETE/users/:username/favorites/:movieId
+ * @function
+ * @param {Object} req - Express request object
+ * @param {string} req.params.username - Username
+ * @param {string} req.params.movieId - ID of movie to remove from favorites
+ * @param {Object} res - Express response object
+ * @returns {Object} Updated favorites list
+ */
 app.delete('/users/:username/favorites/:movieId', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const user = await Users.findOne({ username: req.params.username });
@@ -353,9 +442,15 @@ app.delete('/users/:username/favorites/:movieId', passport.authenticate('jwt', {
     }
 });
 
-// Get all movies
-app.get('/movies', 
-    passport.authenticate('jwt', { session: false }), async (req, res) => {
+/**
+ * Get all movies in the database
+ * @name GET/movies
+ * @function
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Array} List of all movies
+ */
+app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const movies = await Movies.find();
         res.status(200).json(movies);
@@ -365,7 +460,15 @@ app.get('/movies',
     }
 });
 
-// Get movie by ID
+/**
+ * Get a specific movie by ID
+ * @name GET/movies/:id
+ * @function
+ * @param {Object} req - Express request object
+ * @param {string} req.params.id - Movie ID
+ * @param {Object} res - Express response object
+ * @returns {Object} Movie details
+ */
 app.get('/movies/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const movie = await Movies.findById(req.params.id);
@@ -380,7 +483,15 @@ app.get('/movies/:id', passport.authenticate('jwt', { session: false }), async (
     }
 });
 
-// Get movies by genre
+/**
+ * Get all movies of a specific genre
+ * @name GET/movies/genre/:genreName
+ * @function
+ * @param {Object} req - Express request object
+ * @param {string} req.params.genreName - Name of the genre
+ * @param {Object} res - Express response object
+ * @returns {Array} List of movies in the specified genre
+ */
 app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const movies = await Movies.find({ 'Genre.Name': req.params.genreName });
@@ -391,7 +502,15 @@ app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: fals
     }
 });
 
-// Get movies by director
+/**
+ * Get all movies by a specific director
+ * @name GET/movies/director/:directorName
+ * @function
+ * @param {Object} req - Express request object
+ * @param {string} req.params.directorName - Name of the director
+ * @param {Object} res - Express response object
+ * @returns {Array} List of movies by the specified director
+ */
 app.get('/movies/director/:directorName', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const movies = await Movies.find({ 'Director.Name': req.params.directorName });
