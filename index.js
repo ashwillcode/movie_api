@@ -8,7 +8,8 @@ let allowedOrigins = [
     'http://localhost:1234',
     'http://localhost:4200',  // Angular development server
     'https://filmapi-ab3ce15dfb3f.herokuapp.com',
-    'https://film-client.netlify.app'
+    'https://film-client.netlify.app',
+    'https://ashwillcode.github.io'  // GitHub Pages domain
 ];
 
 const express = require('express');
@@ -20,6 +21,7 @@ const Models = require('./models.js');
 const passport = require('passport');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const axios = require('axios');
 
 require('./passport');
 const auth = require('./auth');
@@ -30,6 +32,9 @@ const app = express();
 app.use(express.json());    
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('common')); 
+
+// Serve static files from the public directory
+app.use(express.static('public'));
 
 // Updated CORS configuration
 app.use(cors({
@@ -400,6 +405,28 @@ app.get('/movies/director/:directorName', passport.authenticate('jwt', { session
 // Welcome route
 app.get('/', (req, res) => {
     res.send('Welcome to the Movie API!');
+});
+
+// Image proxy route to handle CORS
+app.get('/proxy-image', async (req, res) => {
+    try {
+        const imageUrl = req.query.url;
+        if (!imageUrl) {
+            return res.status(400).json({ message: 'Image URL is required' });
+        }
+
+        const response = await axios({
+            method: 'get',
+            url: imageUrl,
+            responseType: 'arraybuffer'
+        });
+
+        res.set('Content-Type', response.headers['content-type']);
+        res.send(response.data);
+    } catch (error) {
+        console.error('Error proxying image:', error);
+        res.status(500).json({ message: 'Error fetching image' });
+    }
 });
 
 // Error handler
