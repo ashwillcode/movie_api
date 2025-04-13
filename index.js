@@ -1,3 +1,7 @@
+// Load environment variables
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
 // Configure allowed origins for CORS
 let allowedOrigins = [
     'http://localhost:8080', 
@@ -75,9 +79,20 @@ const validateRequest = (schema) => {
 app.use('/', auth);
 
 // Database connection
-mongoose.connect(process.env.CONNECTION_URI || 'mongodb://localhost:27017/filmapi')
-.then(() => console.log('Connected to MongoDB Atlas!'))
-.catch(err => console.error('Error connecting to MongoDB Atlas:', err));
+mongoose.connect(process.env.CONNECTION_URI)
+.then(() => {
+    console.log('Connected to MongoDB Atlas!');
+    // Log the database name we're connected to
+    console.log('Database:', mongoose.connection.name);
+    // Log the number of movies in the database
+    Models.Movie.countDocuments().then(count => {
+        console.log('Number of movies in database:', count);
+    });
+})
+.catch(err => {
+    console.error('Error connecting to MongoDB Atlas:', err);
+    process.exit(1);
+});
 
 // Model setup
 const Movies = Models.Movie;
@@ -135,7 +150,7 @@ const movieSchema = Joi.object({
     }).required(),
     ImagePath: Joi.string().uri().required(),
     Featured: Joi.boolean().default(false)
-});
+}).unknown(true); // Allow unknown properties to handle both cases
 
 // Create new user
 app.post('/users', validateRequest(userSchema), async (req, res) => {

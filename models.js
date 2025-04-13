@@ -17,9 +17,40 @@ const movieSchema = mongoose.Schema({
 }, {
     toJSON: {
         transform: function(doc, ret) {
+            // Ensure consistent casing for all properties
             ret.id = ret._id;
             delete ret._id;
             delete ret.__v;
+            
+            // Ensure Genre and Director are properly structured
+            if (ret.Genre) {
+                ret.Genre.Name = ret.Genre.Name || ret.Genre.name;
+                ret.Genre.Description = ret.Genre.Description || ret.Genre.description;
+                delete ret.Genre.name;
+                delete ret.Genre.description;
+            }
+            
+            if (ret.Director) {
+                ret.Director.Name = ret.Director.Name || ret.Director.name;
+                ret.Director.Bio = ret.Director.Bio || ret.Director.bio;
+                ret.Director.Birth = ret.Director.Birth || ret.Director.birth;
+                delete ret.Director.name;
+                delete ret.Director.bio;
+                delete ret.Director.birth;
+            }
+            
+            // Ensure other properties are properly cased
+            ret.Title = ret.Title || ret.title;
+            ret.Description = ret.Description || ret.description;
+            ret.ImagePath = ret.ImagePath || ret.imagePath;
+            ret.Featured = ret.Featured !== undefined ? ret.Featured : ret.featured;
+            
+            // Remove lowercase properties
+            delete ret.title;
+            delete ret.description;
+            delete ret.imagePath;
+            delete ret.featured;
+            
             return ret;
         }
     }
