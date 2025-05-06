@@ -15,6 +15,7 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
  */
 let allowedOrigins = [
     'http://localhost:8080', 
+    'http://film-client-hosting.s3-website-us-east-1.amazonaws.com',
     'http://localhost:1234',
     'http://localhost:4200',  // Angular development server
     'https://filmapi-ab3ce15dfb3f.herokuapp.com',
