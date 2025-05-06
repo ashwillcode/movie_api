@@ -66,7 +66,7 @@ router.post('/upload', async (req, res) => {
   try {
     await s3.send(new PutObjectCommand({
       Bucket: BUCKET_NAME,
-      Key: uploadedFile.name,
+      Key: `original-images/${uploadedFile.name}`, 
       Body: uploadedFile.data
     }));
     res.send('File uploaded successfully!');
