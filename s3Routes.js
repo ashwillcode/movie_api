@@ -8,8 +8,14 @@ const path = require('path');
 const router = express.Router();
 const BUCKET_NAME = 'film-client-hosting'; // <-- use your real bucket name
 
-// S3 client setup (uses instance profile so no keys needed)
-const s3 = new S3Client({ region: 'us-east-1' });
+// S3 client setup
+const s3 = new S3Client({
+  region: 'us-east-1',
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+  }
+});
 
 // Enable file upload middleware
 router.use(fileUpload());
