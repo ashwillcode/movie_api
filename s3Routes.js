@@ -71,6 +71,7 @@ router.post('/upload', async (req, res) => {
     }));
     res.send('File uploaded successfully!');
   } catch (err) {
+    console.error('Upload error:', err);
     res.status(500).send(`Upload error: ${err}`);
   }
 });
